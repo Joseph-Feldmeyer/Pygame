@@ -1,0 +1,12 @@
+''' 
+
+1-PygameTry.py 
+
+Let's try to create someting 
+
+'''
+
+
+## Import modules
+import pygame
+
