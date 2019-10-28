@@ -4,6 +4,22 @@
 
 Let's try to create someting 
 
+
+Draft: 
+
+- class Snake 
+--  def init 
+--  def drawSnake
+--  def moveSnake
+
+- class Snack 
+--  def init 
+--  def drawSnack
+
+def drawWindow
+
+def main
+
 '''
 
 
@@ -13,40 +29,48 @@ import pygame
 
 # Define some global variables
 screen_width = 500
-cube_width = 10 
+cube_width = 20
 
 
-## Create the cube class
-class Cube(object):
+## Create the snake class
+class Snake(object):
 
-    def __init__(self, pos, color):
-        self.x_pos, self.y_pos = pos
-        self.color = color
+    def __init__(self, body, direction):
+        self.direction_x, self.direction_y = direction
+        self.body = body
 
-    def drawCube(self, surface):
-        pygame.draw.rect(surface, self.color,
-                         (self.x_pos, self.y_pos, cube.width, cube.width))
+    def drawSnake(self, surface):
+        for i in range(len(self.body)):
+            if i == 0:
+                pygame.draw.rect(surface, (255,255,255),
+                                 ( self.body[i][0], self.body[i][0], cube_width, cube_width))
+            else:
+                pygame.draw.rect(surface, (0,255,0),
+                                 ( self.body[i][0], self.body[i][0], cube_width, cube_width))
+            
+                
 
 
 
 ## Function to redraw the window
 def drawWindow(surface):
-    global screen_width, cube_width, c
+    global s
     surface.fill((0,0,0))
-    c.drawCube(surface)
+    s.drawSnake(surface)
     pygame.display.update()
         
 
 ## Create the main function
 
 def main():
-
+    global screen_width, s
+    
     # Initialize the pygame module
     pygame.init()
     # Create the background
-    background = pygame.display.set_mode((500,500))
+    background = pygame.display.set_mode((screen_width, screen_width))
 
-    c = Cube((50, 50), (0,255,0))
+    s = Snake( [[50, 50]], (1,0) )
 
     # Main loop:
     running = True
