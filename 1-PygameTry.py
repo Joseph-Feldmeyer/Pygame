@@ -1,25 +1,16 @@
 ''' 
-
 1-PygameTry.py 
-
 Let's try to create someting 
-
-
 Draft: 
-
 - class Snake 
 --  def init 
 --  def drawSnake
 --  def moveSnake
-
 - class Snack 
 --  def init 
 --  def drawSnack
-
 def drawWindow
-
 def main
-
 '''
 
 
@@ -54,25 +45,39 @@ class Snake(object):
 
         next_block = [ self.body[0][0]+direction[0]*cube_width,
                        self.body[0][1]+direction[1]*cube_width ]
-
         self.body.insert(0, next_block)
-        self.body.pop()
-
-
         
+        if not snack:
+            self.body.pop()
+
+
+class Snack(object):
+
+    def __init__(self, body):
+        self.body_x, self.body_y = body
+
+    def drawSnack(self, surface):
+        pygame.draw.rect(surface, (255,0,0),
+                         ( self.body_x, self.body_y, cube_width, cube_width) ) 
+
+
+
 
 ## Function to redraw the window
 def drawWindow(surface):
     global s
     surface.fill((0,0,0))
     s.drawSnake(surface)
+    snack.drawSnack(surface)
     pygame.display.update()
+
+    
         
 
 ## Create the main function
 
 def main():
-    global screen_width, s
+    global screen_width, s, snack
     
     # Initialize the pygame module
     pygame.init()
@@ -81,8 +86,12 @@ def main():
     # Create clock 
     clock = pygame.time.Clock()
 
-    s = Snake( [ [50, 50], [70, 50], [90, 50] ] )
-
+    # Create a snake 
+    s = Snake( [ [60, 60], [80, 60], [100, 60] ] )
+    # Create a snack
+    snack = Snack( [200, 200] )
+    
+    
     # Main loop:
     running = True
     while( running ):
@@ -95,6 +104,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            # Logic for key presses, and direction change
             keys = pygame.key.get_pressed()
 
             if keys[pygame.K_LEFT]:
@@ -106,10 +116,41 @@ def main():
             elif keys[pygame.K_DOWN]:
                 s.direction = ( 0, 1) 
 
-        s.moveSnake( s.direction ) 
-        
+
+        # Logic for snack collision
+        if (s.body[0][0]+s.direction[0]*cube_width, s.body[0][1]+s.direction[1]*cube_width) == (snack.body_x, snack.body_y):
+            s.moveSnake( s.direction, snack = True )
+
+            # Find all empty cells:
+            empty_cells = [ [x*cube_width, y*cube_width]
+                            for x in range(screen_width//cube_width)
+                                for y in range(screen_width//cube_width)  ]
+            for body_part in s.body:
+                index = empty_cells.index(body_part)
+                empty_cells.pop(index)
+
+            # Choose a random empty cell
+            snack_x, snack_y = random.choice(empty_cells) 
+            # New snack
+            snack = Snack( [snack_x, snack_y] )
+
+        else:
+            s.moveSnake( s.direction ) 
+
+        # Logic for lose game:
+        ## Run into body part
+        if s.body[0] in s.body[1:]:
+            running = False
+        ## Run out of screen
+        if s.body[0] not in [ [x*cube_width, y*cube_width]
+                              for x in range(screen_width//cube_width)
+                              for y in range(screen_width//cube_width)  ]:
+            running = False
 
         drawWindow(background)
+
+
+    print("Your score is ", len(s.body))
 
 
 
